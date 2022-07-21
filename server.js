@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const router = require('express').Router();
+const 
 
 const PORT = process.env.PORT || 3001;
 
@@ -10,11 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static('public'));
-// GET request for index.html
-app.get('/', (req, res) => {
-  console.info(`${req.method} request to receive to get index.html`)
-  res.sendFile(path.join(__dirname, '/public/index.html'))
-});
+
 // GET request for notes html
 app.get('/notes', (req, res) => {
   console.info(`${req.method} request received to get notes`);
@@ -23,7 +21,13 @@ app.get('/notes', (req, res) => {
 // GET request for notes JSON
 app.get('/api/notes', (req, res) => {
   console.info(`${req.method} request to get JSON notes received`);
-  res.json(`${req.method} request to get JSON notes received`);
+  fs.readFile('./db/db.json', 'utf8', (err, data) => {
+  if(err) {
+    console.error(err);
+  } else {
+    res.json(JSON.parse(data));
+  }
+  });
 });
 
 
@@ -38,6 +42,7 @@ app.post('/api/notes', (req, res) => {
     const newNote = {
       title,
       text,
+
     };
 
     // Obtain created notes and covert string to JSON object
@@ -70,6 +75,11 @@ app.post('/api/notes', (req, res) => {
   } else {
     res.status(500).json('Error in posting note');
   }
+});
+// GET request for index.html
+router.get('*', (req, res) => {
+  console.info(`${req.method} request to receive to get index.html`)
+  res.sendFile(path.join(__dirname, '/public/index.html'))
 });
 
 app.listen(PORT, () =>
