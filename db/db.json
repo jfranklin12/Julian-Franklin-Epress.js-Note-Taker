@@ -6,5 +6,13 @@
   {
     "title": "Hello World!",
     "text": "This is a reminder to turn in your homework!"
+  },
+  {
+    "title": "Good morning!",
+    "text": "coffee cups ready!"
+  },
+  {
+    "title": "Happy lunch break!",
+    "text": "Eat some yummy food!"
   }
 ]
