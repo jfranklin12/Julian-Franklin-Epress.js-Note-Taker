@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const router = require('express').Router();
-const 
+const { v4: uuidv4 } = require('uuid')
 
 const PORT = process.env.PORT || 3001;
 
@@ -42,7 +42,7 @@ app.post('/api/notes', (req, res) => {
     const newNote = {
       title,
       text,
-
+      id: uuidv4(),
     };
 
     // Obtain created notes and covert string to JSON object
@@ -58,7 +58,7 @@ app.post('/api/notes', (req, res) => {
         // Write updated notes back to the file
         fs.writeFile(
           './db/db.json',
-          JSON.stringify(parsedNotes, null, 2),
+          JSON.stringify(parsedNotes, null, 3),
           (writeErr) =>
             writeErr ? console.error(writeErr) : console.info('Successfully updated notes!')
         );
@@ -75,6 +75,33 @@ app.post('/api/notes', (req, res) => {
   } else {
     res.status(500).json('Error in posting note');
   }
+});
+
+// delete note
+app.delete('/api/notes/:id', (req, res) => {
+  console.info(`${req.method} request to delete note`);
+  fs.readFile('./db/db.json', 'utf8', (err, data) => {
+    if (err) {
+      console.error(err)
+    } else {
+      const newArray = JSON.parse(data).filter(note => {
+        if(note.id === req.params.id) {
+        return false
+        } else
+        return true
+      })
+
+      fs.writeFile(
+        './db/db.json',
+        JSON.stringify(newArray, null, 3),
+        (writeErr) =>
+          writeErr ? console.error(writeErr) : console.info('Successfully updated notes!')
+      );
+      res.json(newArray);
+      
+
+    }
+  });
 });
 // GET request for index.html
 router.get('*', (req, res) => {
